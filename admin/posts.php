@@ -1,4 +1,5 @@
 <?php 
+
   //判断服务器的session中是否存了相关数据
   session_start();//一定要先开启
   // var_dump($_SESSION['user']);
@@ -10,6 +11,12 @@
   
   //给当前页设置一个标志
   $visitor = "posts";
+
+  //获取分类
+  include_once "../sqlHelper.php";
+  $sql = "SELECT t1.cat_id,t1.cat_name FROM category t1";
+  $cat_data = read($sql,"bx");
+  var_dump($cat_data);  
 ?>
 <!DOCTYPE html>
 <html lang="zh-CN">
@@ -38,17 +45,19 @@
     <div class="page-action">
     <a class="btn btn-danger btn-sm" href="javascript:;" style="visibility: hidden;">批量删除</a>
     <form class="form-inline">
-          <select name="" class="form-control input-sm">
-            <option value="">所有分类</option>
-            <option value="">未分类</option>
+          <select name="cat_id" class="form-control input-sm">
+            <option value="all">所有分类</option>
+            <?php foreach ($cat_data as $key=>$value): ?>
+            <option value="<?php echo $value['cat_id']?>"><?php echo $value['cat_name']?></option>
+            <?php endforeach;?>
           </select>
-          <select name="" class="form-control input-sm">
-            <option value="">所有状态</option>
-            <option value="">草稿</option>
-            <option value="">已发布</option>
-            <option value="">已删除</option>
+          <select name="status" class="form-control input-sm">
+            <option value="all">所有状态</option>
+            <option value="drafted">草稿</option>
+            <option value="published">已发布</option>
+            <option value="trashed">已作废</option>
           </select>
-          <span class="btn btn-default btn-sm">筛选</span>
+          <span class="btn btn-default btn-sm" id="filtrate">筛选</span>
         </form>
         </div>
       <!-- 有错误信息时展示 -->
@@ -110,6 +119,7 @@
     type:"get",
     url:"../api/getPosts.php",
     success:function(res){
+      console.log(res);
       if (res.code == 200) {
         var data = res.data;
         var pageCount = res.pageCount;
@@ -128,37 +138,59 @@
     }
   });
 
+  //绘制分页导航
   function pageList(pageCount) {
     //模板需要的数据
-  $('#pagination-demo').twbsPagination({
-    totalPages: pageCount,
-    visiblePages: 7,
-    initiateStartPageClick:false, // 取消默认初始点击
-    onPageClick: function (event, page) {
-        // $('#page-content').text('Page ' + page);
-        $.ajax({
-          dataType:"json",
-          type:"get",
-          url:"../api/getPosts.php",
-          data:{
-            'page':page
-          },
-          success:function (res){
-            if (res.code == 200) {
-              console.log("成功");
-              var data = res.data;
-              var context = {comments:data}
-              //借助与模板引擎的api
-              var html = template('tmpl',context);
-              $("tbody").html(html);
+    $('#pagination-demo').twbsPagination({
+      totalPages: pageCount,
+      visiblePages: 7,
+      initiateStartPageClick:false, // 取消默认初始点击
+      onPageClick: function (event, page) {
+          // $('#page-content').text('Page ' + page);
+          $.ajax({
+            dataType:"json",
+            type:"get",
+            url:"../api/getPosts.php",
+            data:{
+              'page':page
+            },
+            success:function (res){
+              if (res.code == 200) {
+                console.log("成功");
+                var data = res.data;
+                var context = {comments:data}
+                //借助与模板引擎的api
+                var html = template('tmpl',context);
+                $("tbody").html(html);
+              }
+            },
+            error:function () {
+              console.log("最终失败");
             }
-          },
-          error:function () {
-            console.log("最终失败");
-          }
-        });
-    }
-}); 
-}
+          });
+      }
+  }); 
+  }
+
+  //为渲染按钮注册点击事件
+  $("#filtrate").on("click",function(){
+    //获取当前所选分类
+    var cat_id = $("select[name='cat_id]").val();
+    //获取当前所选文章状态
+    var status = $("select[name='status']").val();
+    //发送ajax请求
+    $.ajax({
+      dataType:"json",
+      type:"get",
+      data:{
+        cat_id:cat_id,
+        status:status
+      },
+      success:function(){},
+      error:function(){},
+      complete:function(){}
+    });
+  });
+
 </script>
 </html>

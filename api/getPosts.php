@@ -9,6 +9,22 @@
     $pagesize = 10;
     //1.2、定义limit查询的起始位置
     $offset = ($page-1)*$pagesize;
+
+    //9.筛选模块
+    //9.1获取提交过来的数据
+    $cat_id = isset($_GET['cat_id'])?$_GET['cat_id']:"all";
+    $status = isset($_GET['status'])?$_GET['status']:"all";
+    //组装where查询条件
+    //where = '1=1' 条件永远为真，当后面没有and拼接条件的时候，sql就这样 ：select*from posts where
+    //where后面没有条件就会报错，where后面拼接1=1,就避免这种错，这种语句一般用在搜索中，主要防止查询条件报错
+    $where = "1+1";//用于拼接查询条件
+    if ( $cat_id != 'all' ) {
+        $where .= " and t1.cat_id = $cat_id ";
+    }
+    if ( $status != 'all' ) {
+        $where .= " and t1.status = '$status'";
+    }
+
      //2、编写sql语句查询所需数据
     $sql = "SELECT
      t1.*,t2.nickname,t3.cat_name
@@ -20,6 +36,7 @@
     LEFT JOIN category t3
     ON
      t1.cat_id = t3.cat_id
+    WHERE $where
     ORDER BY t1.post_id DESC
     LIMIT $offset,$pagesize";
 
