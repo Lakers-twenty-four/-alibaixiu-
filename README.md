@@ -49,7 +49,7 @@ $where = "1+1";//用于拼接查询条件
 
 ## 模板引擎的使用
 
-> 预备知识点：  
+> 1、预备知识点：  
 
 ### script标签的特点是：
 - innerHTML 永远不会显示在界面上
@@ -59,18 +59,18 @@ $where = "1+1";//用于拼接查询条件
 
 [推荐]https://github.com/tj/consolidate.js#supported-template-engines
 
-> 下载模板引擎JS文件  
+> 2、下载模板引擎JS文件  
 
 
 template-web.js
 
->引入到页面
+>3、引入到页面
 
 ```js
 <script src="/static/assets/vendors/art-template/template-web.js"></script>
 ```
 
->准备一个模板 (联系script标签的特点)
+>4、准备一个模板 (联系script标签的特点)
 
 ```js
 <!-- 准备一个模板引擎 -->
@@ -92,7 +92,7 @@ template-web.js
   </script>
   ```
 
-  > 准备一个数据
+  > 5、准备一个数据
 
   ```js
    $.ajax({
@@ -125,7 +125,7 @@ template-web.js
   });
   ```
 
-  > 通过模板引擎的js提供大的一个api将模板整合得到渲染结果HTML
+  > 6、通过模板引擎的js提供大的一个api将模板整合得到渲染结果HTML
 
   ```js
   //调用模板引擎渲染数据
@@ -141,4 +141,44 @@ template-web.js
           $("tbody").html(html);
  ```
 
+## Pagination plugin(分页插件介绍)
+
+> 1、推荐插件下载网址                                    
+
+[ajax分页插件的网址](http://esimakin.github.io/twbs-pagination/)
+
+> 2、进行下载下来，引入下面的js文件：jquery.twbsPagination.js
+
+> 3、放入到项目位置中去
+
+> 4、HTML code
+
+```html
+<ul id="pagination-demo" class="pagination-sm pull-right pagination"></ul>
+```
+> 5、JS code
+
+```js
+$('#pagination-demo').twbsPagination({
+      totalPages: pageCount,//分页页码的总页数
+      visiblePages: 7,//展示的页码数
+      initiateStartPageClick:false, // 取消默认初始点击
+      onPageClick: function (event, page) {
+          // $('#page-content').text('Page ' + page);
+      }
+});
+```
+
+> 6、**项目中要注意的的点**
+
+- **重置分页页码，要重新渲染筛选条件后的分页页码,对page进行解绑事件**
+- **因为只需要初始化一次**
+```js
+//重置分页页码，要重新渲染筛选条件后的分页页码,对page进行解绑事件
+    $("#pagination-demo").empty();
+    //删除此插件自带的一个值
+    $("#pagination-demo").removeData('twbs-pagination');
+    //解绑page事件
+    $("#pagination-demo").unbind('page');
+```
 
