@@ -141,19 +141,31 @@
 
   //绘制分页导航
   function pageList(pageCount) {
+    //把class = pagination渲染出分页页码的html结构
+    //重置分页页码，要重新渲染筛选条件后的分页页码,对page进行解绑事件
+    $("#pagination-demo").empty();
+    //删除此插件自带的一个值
+    $("#pagination-demo").removeData('twbs-pagination');
+    //解绑page事件
+    $("#pagination-demo").unbind('page');
     //模板需要的数据
     $('#pagination-demo').twbsPagination({
-      totalPages: pageCount,
-      visiblePages: 7,
+      totalPages: pageCount,//分页页码的总页数
+      visiblePages: 7,//展示的页码数
       initiateStartPageClick:false, // 取消默认初始点击
       onPageClick: function (event, page) {
           // $('#page-content').text('Page ' + page);
+          //重新获取筛选条件
+          var cat_id = $("select[name='cat_id']").val();
+          var status = $("select[name='status']").val();
           $.ajax({
             dataType:"json",
             type:"get",
             url:"../api/getPosts.php",
             data:{
-              'page':page
+              cat_id:cat_id,
+              status:status,
+              page:page
             },
             success:function (res){
               if (res.code == 200) {
@@ -193,6 +205,7 @@
       success:function(res){
         if (res.code == 200) {
           console.log("请学会给自己找麻烦");
+          var pageCount = res.pageCount;
           var data = res.data;
           //调用模板引擎渲染数据
           var context = {comments:data}
@@ -200,8 +213,9 @@
           var html = template('tmpl',context);
           //将渲染结果的html设置到默认元素的innerHTML中
           $("tbody").html(html);
+          console.log(pageCount);
           // 重新绘制分页导航
-          pageList(res.pageCount);
+          pageList(pageCount);
         }
       },
       error:function(){
