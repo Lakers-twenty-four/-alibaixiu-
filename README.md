@@ -73,7 +73,6 @@ template-web.js
 >4、准备一个模板 (联系script标签的特点)
 
 ```js
-editor.setTheme('dark');
 <!-- 准备一个模板引擎 -->
   <script type="text/x-art-template" id="tmpl">
     {{each comments}}
@@ -161,12 +160,12 @@ editor.setTheme('dark');
 
 ```js
 $('#pagination-demo').twbsPagination({
-      totalPages: pageCount,//分页页码的总页数
-      visiblePages: 7,//展示的页码数
-      initiateStartPageClick:false, // 取消默认初始点击
-      onPageClick: function (event, page) {
-          // $('#page-content').text('Page ' + page);
-      }
+  totalPages: pageCount,//分页页码的总页数
+  visiblePages: 7,//展示的页码数
+  initiateStartPageClick:false, // 取消默认初始点击
+  onPageClick: function (event, page) {
+      // $('#page-content').text('Page ' + page);
+  }
 });
 ```
 
@@ -176,10 +175,10 @@ $('#pagination-demo').twbsPagination({
 - **因为只需要初始化一次**
 ```js
 //重置分页页码，要重新渲染筛选条件后的分页页码,对page进行解绑事件
-    $("#pagination-demo").empty();
-    //删除此插件自带的一个值
-    $("#pagination-demo").removeData('twbs-pagination');
-    //解绑page事件
-    $("#pagination-demo").unbind('page');
+  $("#pagination-demo").empty();
+  //删除此插件自带的一个值
+  $("#pagination-demo").removeData('twbs-pagination');
+  //解绑page事件
+  $("#pagination-demo").unbind('page');
 ```
 
