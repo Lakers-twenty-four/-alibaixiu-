@@ -73,6 +73,7 @@ template-web.js
 >4、准备一个模板 (联系script标签的特点)
 
 ```js
+editor.setTheme('dark');
 <!-- 准备一个模板引擎 -->
   <script type="text/x-art-template" id="tmpl">
     {{each comments}}
@@ -96,32 +97,32 @@ template-web.js
 
   ```js
    $.ajax({
-      dataType:"json",
-      type:"get",
-      url:"../api/getPosts.php",
-      data:{
-        cat_id:cat_id,
-        status:status
-      },
-      success:function(res){
-        if (res.code == 200) {
-          console.log("请学会给自己找麻烦");
-          var data = res.data;
-          //调用模板引擎渲染数据
-          var context = {comments:data}
-          //借助模板引擎的api
-          var html = template('tmpl',context);
-          //将渲染结果的html设置到默认元素的innerHTML中
-          $("tbody").html(html);
-          // 重新绘制分页导航
-          pageList(res.pageCount);
-        }
-      },
-      error:function(){
-        console.log("失败");
-      },
-      complete:function(){}
-    });
+    dataType:"json",
+    type:"get",
+    url:"../api/getPosts.php",
+    data:{
+      cat_id:cat_id,
+      status:status
+    },
+    success:function(res){
+      if (res.code == 200) {
+        console.log("请学会给自己找麻烦");
+        var data = res.data;
+        //调用模板引擎渲染数据
+        var context = {comments:data}
+        //借助模板引擎的api
+        var html = template('tmpl',context);
+        //将渲染结果的html设置到默认元素的innerHTML中
+        $("tbody").html(html);
+        // 重新绘制分页导航
+        pageList(res.pageCount);
+      }
+    },
+    error:function(){
+      console.log("失败");
+    },
+    complete:function(){}
+  });
   });
   ```
 
@@ -129,9 +130,9 @@ template-web.js
 
   ```js
   //调用模板引擎渲染数据
-          var context = {comments:data}
-          //借助模板引擎的api
-          var html = template('tmpl',context);
+  var context = {comments:data}
+  //借助模板引擎的api
+  var html = template('tmpl',context);
  ```
 
  >将渲染结果的HTML设置到默认元素的html中
