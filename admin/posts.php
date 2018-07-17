@@ -16,7 +16,8 @@
   include_once "../sqlHelper.php";
   $sql = "SELECT t1.cat_id,t1.cat_name FROM category t1";
   $cat_data = read($sql,"bx");
-  var_dump($cat_data);  
+  // print_r($cat_data[0]['cat_name']);
+  // exit;
 ?>
 <!DOCTYPE html>
 <html lang="zh-CN">
@@ -48,7 +49,7 @@
           <select name="cat_id" class="form-control input-sm">
             <option value="all">所有分类</option>
             <?php foreach ($cat_data as $key=>$value): ?>
-            <option value="<?php echo $value['cat_id']?>"><?php echo $value['cat_name']?></option>
+              <option value="<?php echo $value['cat_id']?>"><?php echo $value['cat_name'] ?></option>
             <?php endforeach;?>
           </select>
           <select name="status" class="form-control input-sm">
@@ -119,7 +120,7 @@
     type:"get",
     url:"../api/getPosts.php",
     success:function(res){
-      console.log(res);
+      // console.log(res);
       if (res.code == 200) {
         var data = res.data;
         var pageCount = res.pageCount;
@@ -175,19 +176,37 @@
   //为渲染按钮注册点击事件
   $("#filtrate").on("click",function(){
     //获取当前所选分类
-    var cat_id = $("select[name='cat_id]").val();
+    var cat_id = $("select[name='cat_id']").val();
     //获取当前所选文章状态
     var status = $("select[name='status']").val();
+
+    console.log(cat_id+"--------"+status);
     //发送ajax请求
     $.ajax({
       dataType:"json",
       type:"get",
+      url:"../api/getPosts.php",
       data:{
         cat_id:cat_id,
         status:status
       },
-      success:function(){},
-      error:function(){},
+      success:function(res){
+        if (res.code == 200) {
+          console.log("请学会给自己找麻烦");
+          var data = res.data;
+          //调用模板引擎渲染数据
+          var context = {comments:data}
+          //借助模板引擎的api
+          var html = template('tmpl',context);
+          //将渲染结果的html设置到默认元素的innerHTML中
+          $("tbody").html(html);
+          // 重新绘制分页导航
+          pageList(res.pageCount);
+        }
+      },
+      error:function(){
+        console.log("失败");
+      },
       complete:function(){}
     });
   });
