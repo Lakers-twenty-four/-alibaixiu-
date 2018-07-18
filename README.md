@@ -141,6 +141,20 @@ template-web.js
           $("tbody").html(html);
  ```
 
+> 补充模板引擎中的if语句
+
+```js
+ <td class="text-center">
+  {{ if $value["status"] == 'drafted'}}
+    草稿
+    {{ else if $value["status"] == 'piblished' }}
+      已发布
+    {{ else }}
+      已作废
+  {{ /if }}
+ </td>
+```
+
 ## Pagination plugin(分页插件介绍)
 
 > 1、推荐插件下载网址                                    
@@ -182,3 +196,51 @@ $('#pagination-demo').twbsPagination({
   $("#pagination-demo").unbind('page');
 ```
 
+## layer组件介绍
+
+**简单介绍**：ayer是一款近年来备受青睐的web弹层组件，她具备全方位的解决方案，致力于服务各水平段的开发人员，您的页面会轻松地拥有丰富友好的操作体验。
+
+[网址推荐](http://www.layui.com/laydate/)
+
+> 1、步骤：下载插件,引入 layer文件夹 到文件目录
+
+
+> 2、引入 css 和 js 文件
+```html
+<link rel="stylesheet" href="/static/plugins/layer/theme/default/layer.css">
+
+<!-- 引入好layer.js后，直接用即可 -->
+<script src="/static/plugins/layer/layer.js"></script>
+```
+
+> 3、初始化
+```js
+$(function(){
+  $(document)
+  .ajaxStart(function(){
+  //   // console.log("ajax开始");
+  //   layer.load(0, {shade: false}); //0代表加载的风格，支持0-2
+  // })
+  //loading层
+    layer.load(1, {
+      shade: [0.3,'#ccc'] ,//0.1透明度的白色背景
+      shadeClose :false
+    });
+  })
+  .ajaxStop(function(){
+    layer.closeAll(); //关闭特定层
+  });
+});
+```
+
+> 基本参数
+
+#### shadeClose - 是否点击遮罩关闭
+*类型：Boolean，默认：false*
+
+*如果你的shade是存在的，那么你可以设定shadeClose来控制点击弹层外区域关闭。*
+
+#### time - 自动关闭所需毫秒
+类型：Number，默认：0
+
+默认不会自动关闭。当你想自动关闭时，可以time: 5000，即代表5秒后自动关闭，注意单位是毫秒（1秒=1000毫秒）

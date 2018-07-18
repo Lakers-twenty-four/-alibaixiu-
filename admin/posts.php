@@ -27,6 +27,7 @@
   <link rel="stylesheet" href="/static/assets/vendors/bootstrap/css/bootstrap.css">
   <link rel="stylesheet" href="/static/assets/vendors/font-awesome/css/font-awesome.css">
   <link rel="stylesheet" href="/static/assets/css/admin.css">
+  <link rel="stylesheet" href="/static/plugins/layer/theme/default/layer.css">
 </head>
 <body>
   <div class="main">
@@ -95,6 +96,8 @@
   <script src="/static/assets/vendors/bootstrap/js/bootstrap.js"></script>
   <script src="/static/plugins/jquery.twbsPagination.min.js"></script>
   <script src="/static/assets/vendors/art-template/template-web.js"></script>
+  <!-- 引入好layer.js后，直接用即可 -->
+  <script src="/static/plugins/layer/layer.js"></script>
   <!-- 准备一个模板引擎 -->
   <script type="text/x-art-template" id="tmpl">
     {{each comments}}
@@ -104,16 +107,42 @@
       <td>{{$value["nickname"]}}</td>
       <td>{{$value["cat_name"]}}</td>
       <td class="text-center">{{$value["created"]}}</td>
-      <td class="text-center">{{$value["status"]}}</td>
       <td class="text-center">
-        <a href="javascript:;" class="btn btn-default btn-xs">编辑</a>
-        <a href="javascript:;" class="btn btn-danger btn-xs">删除</a>
+        {{ if $value["status"] == 'drafted'}}
+          草稿
+          {{ else if $value["status"] == 'piblished' }}
+            已发布
+          {{ else }}
+            已作废
+        {{ /if }}
+      </td>
+      <td class="text-center">
+        <a href="./post-edit.php?post_id={{$value["post_id"]}}" class="btn btn-default btn-xs" id="editBtn">编辑</a>
+        <a href="javascript:;" class="btn btn-danger btn-xs" id="delBtn">删除</a>
       </td>
     </tr>
     {{/each}}
   </script>
 </body>
 <script>
+  $(function(){
+    $(document)
+    .ajaxStart(function(){
+    //   // console.log("ajax开始");
+    //   layer.load(0, {shade: false}); //0代表加载的风格，支持0-2
+    // })
+    //loading层
+      layer.load(1, {
+        shade: [0.3,'#ccc'] ,//0.1透明度的白色背景
+        shadeClose :false
+      });
+    })
+    .ajaxStop(function(){
+      layer.closeAll(); //关闭特定层
+    });
+  });
+  
+
   //在posts.php页面的下面发送ajax请求，获取文章的数据,使用模板引擎进行数据的渲染
   $.ajax({
     dataType:"json",
@@ -192,7 +221,6 @@
     //获取当前所选文章状态
     var status = $("select[name='status']").val();
 
-    console.log(cat_id+"--------"+status);
     //发送ajax请求
     $.ajax({
       dataType:"json",
@@ -223,7 +251,35 @@
       },
       complete:function(){}
     });
-  });
 
+  });
+  
+
+  //为删除按钮注册点击事件--事件委托
+  $("tbody").on("click","#delBtn",function(){
+    // console.log("删除按钮被触发");
+    // 获取当前对象
+    var _self = $(this);
+    //获取当前的value
+    var post_id = _self.parents("tr").find("input").val();
+    //友好提示用户,是否确认删除
+    if (confirm("确认删除?")) {
+      $.ajax({
+        dataType: "json",
+        type: "get",
+        data: {
+          post_id : post_id
+        },
+        url:"../api/delPost.php",
+        success:function(res){
+          if (res.code==200) {
+              console.log(res);
+              //移除自身
+              _self.parents("tr").remove();
+          }
+        }
+      });
+    }
+  });
 </script>
 </html>
