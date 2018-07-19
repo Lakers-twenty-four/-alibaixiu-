@@ -244,3 +244,197 @@ $(function(){
 类型：Number，默认：0
 
 默认不会自动关闭。当你想自动关闭时，可以time: 5000，即代表5秒后自动关闭，注意单位是毫秒（1秒=1000毫秒）
+
+## 实现文章图片上传的实时预览
+
+> 使用ajax来上传的条件
+
+- 给 input type=file 文件上传域，绑定 onchange 事件
+
+- 利用表单对象
+```js
+var formObj = new FormData();
+formObj.append('file',文件对象（FILE）); // FILES=> this.files[0]
+```
+
+- 只能使用$.ajax，因为可以上传二进制数据
+```js
+if (file) {
+  //有文件上传，发送ajax请求，通过php帮助我们处理上传文件
+  $.ajax({
+      url: "../api/uploadImg.php",
+      type: "post", //上传文件只能是post
+      data: formdata,
+      contentType: false, //上传文件不可以指定数据类型
+      processData: false, //对数据不进行数据的序列化
+      dataType: "json",
+      success: function (res) {
+        if (res.code == 200) {
+          $(".help-block").show().attr("src", res.url);
+          url = res.url;
+        }
+      }
+    });
+}
+```
+
+> 服务器端代码
+
+```php
+<?php
+    // var_dump($_FILES);
+    /* array(1) {
+        ["file"]=>
+        array(5) {
+          ["name"]=>
+          string(16) "1454414215-0.png"
+          ["type"]=>
+          string(9) "image/png"
+          ["tmp_name"]=>
+          string(22) "C:\Windows\phpBF3C.tmp"
+          ["error"]=>
+          int(0)
+          ["size"]=>
+          int(74547)
+        }
+      } */
+      //获取文件后缀名
+      $name = $_FILES["file"]["name"];
+      $fileSuffix = strrchr($name,".");
+
+      //给文件随机生成一个名字
+      $fileNewName = time().rand(0,999).$fileSuffix;
+
+      //获取临时文件地址
+      $temp_name = $_FILES["file"]["tmp_name"];
+
+      //当前文件在指定文件夹中的路径
+      $fileCurrPath = "../static/assets/img/".$fileNewName;
+
+      //将临时文件存储到指定文件
+      if(move_uploaded_file($temp_name,$fileCurrPath)){
+          //上传成功，需要返回文件的完整路径
+          $response = ['code'=>200,'message'=>'上传头像成功','url'=>$fileCurrPath];
+      }else {
+          //上传头像失败
+          $response = ['code'=>-1,'message'=>'上传头像失败'];
+      }
+      echo json_encode($response);  
+?>
+```
+
+## 用时间插件laydate来完成文章添加的时间显示
+
+> 网址 [推荐网址](http://www.layui.com/laydate/ )
+
+
+> 具体使用
+
+**步骤一：** 下载插件，引入laydate目录到项目中
+> 获得 layDate 文件包后，解压并将 laydate 整个文件夹（不要拆分结构） 存放到你项目的任意目录，使用时，只需引入 laydate.js 即可。 下面是一个入门示例：
+
+
+**步骤二：** 引入核心js文件 laydate/laydate.js 文件
+
+```html
+<script src="/static/plugins/laydate/laydate.js"></script>
+```
+
+**步骤三：** 给时间的input框定义一个id
+```html
+<div class="form-group">
+  <label for="created">发布时间</label>
+  <input id="created" class="form-control" name="created">
+</div>
+```
+
+**步骤四：** 进行时间的初始化
+
+```js
+<script>
+  //执行一个laydate实例
+  laydate.render({
+    elem: '#created', //指定元素
+    type:'datetime' //指定日期的类型
+  });
+</script>
+```
+
+**效果**
+![效果图]("./static/assets/mdImg/snipaste_20180719_084344.png")
+
+
+## 集成富文本编辑器到文章添加内容中
+
+**步骤一：** 引入富文本编辑器包到项目中
+
+**步骤二：** 引入三个js文件
+
+```js
+<script src="/static/plugins/ueditor/ueditor.config.js"></script>
+<script src="/static/plugins/ueditor/ueditor.all.min.js"></script>
+<script src="/static/plugins/ueditor/lang/zh-cn/zh-cn.js"></script>
+<!-- 建议手动加载语言，避免在ie下有时因为加载语言失败导致编辑器加载失败 -->
+<!-- 这里加载的语言文本会覆盖在你的配置项目里添加的语言类型，比如比在配置项目里配置的是英文，这里加载的中文，那最后就是中文 -->
+```
+> 其中 unditor.config.js 是配置文件，如可以改编辑器的宽高和显示编辑器的按钮选项
+
+
+**步骤三：** 找到页面上的textarea元素，指定id，进行初始化
+```js
+//初始化富文本编辑器
+//实例化编辑器
+//建议使用工厂方法getEditor创建和引用编辑器实例，如果在某个闭包下引用改编辑器
+var ue = UE.getEditor('content');
+```
+
+**效果** 
+![富文本编辑器效果图]("./static/assets/mdImg/富文本编辑器.png")
+
+> 使用富文本编辑的文章样式，到时候在前台显示就会出现对应的样式。（即所见即所得）
+
+**回显富文本编辑器内容注意事项**
+```js
+//初始化富文本编辑器
+//实例化编辑器
+//建议使用工厂方法getEditor创建和引用编辑器实例，如果在某个闭包下引用改编辑器
+var ue = UE.getEditor('content');//由于异步的原因（时间差的问题--》导致代码的执行顺序）
+$("#content").val(data.content); // 后设置内容（可以和上面的代码置换顺序也行）----------记得笔记
+```
+> 完整代码如下
+```js
+$.ajax({
+    dataType:"json",
+    type:"get",
+    url:"../api/getOnePostData.php",
+    data:{
+      post_id:post_id
+    },
+    success:function(res){
+      if (res.code == 200) {
+        //把数据赋值给页面对应的input框
+        var data = res.data;
+        console.log(res.data);
+        $("#title").val(data.title);
+        $(".help-block").show().attr('src',data.feature);
+        $("#created").val(data.created);
+        //select对象.val(3); 把option value=3的默认选中
+        $("#cat_id").val(data.cat_id);
+        $("#status").val(data.status);
+        $("#img").val(data.feature);
+        //回显富文本编辑器内容
+        //初始化富文本编辑器
+        //实例化编辑器
+        //建议使用工厂方法getEditor创建和引用编辑器实例，如果在某个闭包下引用改编辑器
+        var ue = UE.getEditor('content');//由于异步的原因（时间差的问题--》导致代码的执行顺序）
+        $("#content").val(data.content); // 后设置内容（可以和上面的代码置换顺序也行）----------记得笔记
+      }
+    },
+    error:function(){
+      console.log("失败");
+    }
+  }); 
+  ```
+
+
+
