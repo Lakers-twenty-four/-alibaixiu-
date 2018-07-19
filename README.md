@@ -262,19 +262,19 @@ formObj.append('file',文件对象（FILE）); // FILES=> this.files[0]
 if (file) {
   //有文件上传，发送ajax请求，通过php帮助我们处理上传文件
   $.ajax({
-      url: "../api/uploadImg.php",
-      type: "post", //上传文件只能是post
-      data: formdata,
-      contentType: false, //上传文件不可以指定数据类型
-      processData: false, //对数据不进行数据的序列化
-      dataType: "json",
-      success: function (res) {
-        if (res.code == 200) {
-          $(".help-block").show().attr("src", res.url);
-          url = res.url;
-        }
+    url: "../api/uploadImg.php",
+    type: "post", //上传文件只能是post
+    data: formdata,
+    contentType: false, //上传文件不可以指定数据类型
+    processData: false, //对数据不进行数据的序列化
+    dataType: "json",
+    success: function (res) {
+      if (res.code == 200) {
+        $(".help-block").show().attr("src", res.url);
+        url = res.url;
       }
-    });
+    }
+  });
 }
 ```
 
@@ -282,44 +282,44 @@ if (file) {
 
 ```php
 <?php
-    // var_dump($_FILES);
-    /* array(1) {
-        ["file"]=>
-        array(5) {
-          ["name"]=>
-          string(16) "1454414215-0.png"
-          ["type"]=>
-          string(9) "image/png"
-          ["tmp_name"]=>
-          string(22) "C:\Windows\phpBF3C.tmp"
-          ["error"]=>
-          int(0)
-          ["size"]=>
-          int(74547)
-        }
-      } */
-      //获取文件后缀名
-      $name = $_FILES["file"]["name"];
-      $fileSuffix = strrchr($name,".");
+// var_dump($_FILES);
+/* array(1) {
+    ["file"]=>
+    array(5) {
+      ["name"]=>
+      string(16) "1454414215-0.png"
+      ["type"]=>
+      string(9) "image/png"
+      ["tmp_name"]=>
+      string(22) "C:\Windows\phpBF3C.tmp"
+      ["error"]=>
+      int(0)
+      ["size"]=>
+      int(74547)
+    }
+  } */
+  //获取文件后缀名
+  $name = $_FILES["file"]["name"];
+  $fileSuffix = strrchr($name,".");
 
-      //给文件随机生成一个名字
-      $fileNewName = time().rand(0,999).$fileSuffix;
+  //给文件随机生成一个名字
+  $fileNewName = time().rand(0,999).$fileSuffix;
 
-      //获取临时文件地址
-      $temp_name = $_FILES["file"]["tmp_name"];
+  //获取临时文件地址
+  $temp_name = $_FILES["file"]["tmp_name"];
 
-      //当前文件在指定文件夹中的路径
-      $fileCurrPath = "../static/assets/img/".$fileNewName;
+  //当前文件在指定文件夹中的路径
+  $fileCurrPath = "../static/assets/img/".$fileNewName;
 
-      //将临时文件存储到指定文件
-      if(move_uploaded_file($temp_name,$fileCurrPath)){
-          //上传成功，需要返回文件的完整路径
-          $response = ['code'=>200,'message'=>'上传头像成功','url'=>$fileCurrPath];
-      }else {
-          //上传头像失败
-          $response = ['code'=>-1,'message'=>'上传头像失败'];
-      }
-      echo json_encode($response);  
+  //将临时文件存储到指定文件
+  if(move_uploaded_file($temp_name,$fileCurrPath)){
+    //上传成功，需要返回文件的完整路径
+    $response = ['code'=>200,'message'=>'上传头像成功','url'=>$fileCurrPath];
+  }else {
+    //上传头像失败
+    $response = ['code'=>-1,'message'=>'上传头像失败'];
+  }
+  echo json_encode($response);  
 ?>
 ```
 
@@ -361,7 +361,7 @@ if (file) {
 ```
 
 **效果**
-![效果图]("./static/assets/mdImg/snipaste_20180719_084344.png")
+![效果图]("https://github.com/Lakers-twenty-four/-alibaixiu-/blob/master/static/assets/mdImg/snipaste_20180719_084344.png")
 
 
 ## 集成富文本编辑器到文章添加内容中
@@ -389,7 +389,7 @@ var ue = UE.getEditor('content');
 ```
 
 **效果** 
-![富文本编辑器效果图]("./static/assets/mdImg/富文本编辑器.png")
+![富文本编辑器效果图]("https://github.com/Lakers-twenty-four/-alibaixiu-/blob/master/static/assets/mdImg/%E5%AF%8C%E6%96%87%E6%9C%AC%E7%BC%96%E8%BE%91%E5%99%A8.png")
 
 > 使用富文本编辑的文章样式，到时候在前台显示就会出现对应的样式。（即所见即所得）
 
@@ -404,36 +404,36 @@ $("#content").val(data.content); // 后设置内容（可以和上面的代码�
 > 完整代码如下
 ```js
 $.ajax({
-    dataType:"json",
-    type:"get",
-    url:"../api/getOnePostData.php",
-    data:{
-      post_id:post_id
-    },
-    success:function(res){
-      if (res.code == 200) {
-        //把数据赋值给页面对应的input框
-        var data = res.data;
-        console.log(res.data);
-        $("#title").val(data.title);
-        $(".help-block").show().attr('src',data.feature);
-        $("#created").val(data.created);
-        //select对象.val(3); 把option value=3的默认选中
-        $("#cat_id").val(data.cat_id);
-        $("#status").val(data.status);
-        $("#img").val(data.feature);
-        //回显富文本编辑器内容
-        //初始化富文本编辑器
-        //实例化编辑器
-        //建议使用工厂方法getEditor创建和引用编辑器实例，如果在某个闭包下引用改编辑器
-        var ue = UE.getEditor('content');//由于异步的原因（时间差的问题--》导致代码的执行顺序）
-        $("#content").val(data.content); // 后设置内容（可以和上面的代码置换顺序也行）----------记得笔记
-      }
-    },
-    error:function(){
-      console.log("失败");
+  dataType:"json",
+  type:"get",
+  url:"../api/getOnePostData.php",
+  data:{
+    post_id:post_id
+  },
+  success:function(res){
+    if (res.code == 200) {
+      //把数据赋值给页面对应的input框
+      var data = res.data;
+      console.log(res.data);
+      $("#title").val(data.title);
+      $(".help-block").show().attr('src',data.feature);
+      $("#created").val(data.created);
+      //select对象.val(3); 把option value=3的默认选中
+      $("#cat_id").val(data.cat_id);
+      $("#status").val(data.status);
+      $("#img").val(data.feature);
+      //回显富文本编辑器内容
+      //初始化富文本编辑器
+      //实例化编辑器
+      //建议使用工厂方法getEditor创建和引用编辑器实例，如果在某个闭包下引用改编辑器
+      var ue = UE.getEditor('content');//由于异步的原因（时间差的问题--》导致代码的执行顺序）
+      $("#content").val(data.content); // 后设置内容（可以和上面的代码置换顺序也行）----------记得笔记
     }
-  }); 
+  },
+  error:function(){
+    console.log("失败");
+  }
+}); 
   ```
 
 
