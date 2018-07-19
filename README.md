@@ -361,7 +361,8 @@ if (file) {
 ```
 
 **效果**
-![效果图]("https://github.com/Lakers-twenty-four/-alibaixiu-/blob/master/static/assets/mdImg/snipaste_20180719_084344.png")
+
+![](https://github.com/Lakers-twenty-four/-alibaixiu-/blob/master/static/assets/mdImg/snipaste_20180719_084344.png)
 
 
 ## 集成富文本编辑器到文章添加内容中
@@ -389,7 +390,8 @@ var ue = UE.getEditor('content');
 ```
 
 **效果** 
-![富文本编辑器效果图]("https://github.com/Lakers-twenty-four/-alibaixiu-/blob/master/static/assets/mdImg/%E5%AF%8C%E6%96%87%E6%9C%AC%E7%BC%96%E8%BE%91%E5%99%A8.png")
+
+![](https://github.com/Lakers-twenty-four/-alibaixiu-/blob/master/static/assets/mdImg/%E5%AF%8C%E6%96%87%E6%9C%AC%E7%BC%96%E8%BE%91%E5%99%A8.png)
 
 > 使用富文本编辑的文章样式，到时候在前台显示就会出现对应的样式。（即所见即所得）
 
