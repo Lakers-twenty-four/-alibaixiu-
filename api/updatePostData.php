@@ -3,7 +3,7 @@
 //1.接收参数
 $title = $_POST['title'];
 $content = $_POST['content'];
-$feature = $_POST['url'];
+// $feature = $_POST['url'];
 $created = $_POST['created'];
 $cat_id = $_POST['cat_id'];
 $status = $_POST['status'];
@@ -16,6 +16,15 @@ if (!$conn) {
 }
 //3、设置字符集编码格式
 mysqli_set_charset($conn,"utf-8");
+
+//bug--获取旧的图片路径
+$sql2 = "SELECT t1.feature from posts t1 where post_id = $post_id";
+//执行sql语句
+$res2 = mysqli_query($conn,$sql2);
+$dataOfOldUrl = mysqli_fetch_assoc($res2);
+//判断是否有新的图片路径传过来，没有的话继续引用旧的图片路径
+$feature = trim($_POST['url'])==""?$dataOfOldUrl['feature']:$_POST['url'];
+
 //3.编写sql语句，
 $sql = "update posts set title='$title',content='$content',feature='$feature',cat_id='$cat_id',created='$created',status='$status' where post_id = $post_id";
 //4.执行sql语句

@@ -141,7 +141,7 @@ template-web.js
           $("tbody").html(html);
  ```
 
-> 补充模板引擎中的if语句
+> **补充1、** 模板引擎中的if语句
 
 ```js
  <td class="text-center">
@@ -153,6 +153,74 @@ template-web.js
       已作废
   {{ /if }}
  </td>
+```
+
+> **补充2、** 模板引擎不需要循环遍历下的情况
+
+
+- 服务端返回数据格式
+```php
+//执行sql语句
+$data = read($sql,"bx");
+
+//判断是否查询成功
+if ($data) {
+    $response = ['code'=>200,'message'=>'提取成功','data'=>$data];
+} else {
+    $response = ['code'=>-1,'message'=>'提取失败'];
+}
+
+echo json_encode($response);
+```
+
+- 客户端获取响应数据
+
+```js
+$.ajax({
+  dataType:"json",
+  type:"get",
+  data:{page:page},
+  url:"../api/getComments.php",
+  success:function(res){
+    console.log(res);
+    //模板所需数据
+    var context = {comments:res.data}
+    //借助模板引擎的api
+    var html = template('tmpl',context);
+    console.log(html);
+    //将渲染结果的HTML设置到默认元素的 innerHTML 中
+    $("tbody").html(html);
+
+    //绘制分页导航
+    $('#pagination-demo').twbsPagination({
+      totalPages: 10,//分页页码的总页数
+      visiblePages: 7,//展示的页码数
+      initiateStartPageClick:false, // 取消默认初始点击
+      onPageClick: function (event, page) {
+        getComments(page);
+      }
+});
+```
+
+- **重点:** 准备模板
+```js
+<script src="/static/plugins/jquery.twbsPagination.min.js"></script>
+<script type="text/x-art-template" id="tmpl">
+  {{each comments}}
+  <tr>
+    <td class="text-center"><input type="checkbox"></td>
+    <td>{{$value.author}}</td>
+    <td>{{$value.content}}</td>
+    <td>{{$value.title}}</td>
+    <td>{{$value.created}}</td>
+    <td>{{$value.status}}</td>
+    <td class="text-center">
+      <a href="post-add.php" class="btn btn-info btn-xs">批准</a>
+      <a href="javascript:;" class="btn btn-danger btn-xs">删除</a>
+    </td>
+  </tr>
+  {{/each}}
+</script>
 ```
 
 ## Pagination plugin(分页插件介绍)

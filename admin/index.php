@@ -8,6 +8,8 @@
     exit;
   }
   
+  //给当前页设置一个标志
+  $visitor = 'index';
 ?>
 <!DOCTYPE html>
 <html lang="zh-CN">
@@ -41,10 +43,13 @@
             <div class="panel-heading">
               <h3 class="panel-title">站点内容统计：</h3>
             </div>
-            <ul class="list-group">
-              <li class="list-group-item"><strong>10</strong>篇文章（<strong>2</strong>篇草稿）</li>
-              <li class="list-group-item"><strong>6</strong>个分类</li>
-              <li class="list-group-item"><strong>5</strong>条评论（<strong>1</strong>条待审核）</li>
+            <ul class="list-group" id="count">
+              <!-- 准备一个模板 -->
+              <script type="text/x-art-template" id="tmpl">
+                <li class="list-group-item"><strong>{{ res.postsCount }}</strong>篇文章（<strong>{{  res.draftedCount }}</strong>篇草稿）</li>
+                <li class="list-group-item"><strong>{{  res.catsCount }}</strong>个分类</li>
+                <li class="list-group-item"><strong>{{  res.commentsCount }}</strong>条评论（<strong>{{  res.heldCount }}</strong>条待审核）</li>
+              </script>
             </ul>
           </div>
         </div>
@@ -60,6 +65,20 @@
 
   <script src="/static/assets/vendors/jquery/jquery.js"></script>
   <script src="/static/assets/vendors/bootstrap/js/bootstrap.js"></script>
-
+  <script src="/static/assets/vendors/art-template/template-web.js"></script>
+  <script>
+    //发送ajax请求，将请求回来的数据渲染页面
+    $.ajax({
+      dataType:"json",
+      type:"get",
+      url:"../api/getStatisticsData.php",
+      success:function(res){
+        //调用模板引擎,渲染数据
+        var html = template('tmpl',{"res":res});
+        //调用模板引擎，进行渲染
+        $("#count").html(html);
+      }
+    });
+  </script>
 </body>
 </html>

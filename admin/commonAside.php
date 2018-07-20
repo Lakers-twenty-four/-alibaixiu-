@@ -23,8 +23,8 @@
       <h3 class="name"><?php echo $_SESSION['user']['nickname']?></h3>
     </div>
     <ul class="nav">
-      <li>
-        <a href="index.html">
+      <li class="<?php echo $visitor=='index'?'active':''?>">
+        <a href="index.php">
           <i class="fa fa-dashboard"></i>仪表盘</a>
       </li>
       <li>
@@ -51,12 +51,12 @@
           </li>
         </ul>
       </li>
-      <li>
-        <a href="comments.html">
+      <li class="<?php echo $visitor=='comments'?'active':''?>">
+        <a href="comments.php">
           <i class="fa fa-comments"></i>评论</a>
       </li>
       <li>
-        <a href="users.html">
+        <a href="users.php">
           <i class="fa fa-users"></i>用户</a>
       </li>
       <li>
@@ -66,10 +66,10 @@
         </a>
         <ul id="menu-settings" class="collapse">
           <li>
-            <a href="nav-menus.html">导航菜单</a>
+            <a href="nav-menus.php">导航菜单</a>
           </li>
           <li>
-            <a href="slides.html">图片轮播</a>
+            <a href="slides.php">图片轮播</a>
           </li>
 
         </ul>

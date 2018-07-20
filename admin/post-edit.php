@@ -134,6 +134,7 @@
   $.ajax({
     dataType:"json",
     type:"get",
+    async:false,
     url:"../api/getOnePostData.php",
     data:{
       post_id:post_id
@@ -155,6 +156,7 @@
         //实例化编辑器
         //建议使用工厂方法getEditor创建和引用编辑器实例，如果在某个闭包下引用改编辑器
         var ue = UE.getEditor('content');//由于异步的原因（时间差的问题--》导致代码的执行顺序）
+        console.log(data.content);
         $("#content").val(data.content); // 后设置内容（可以和上面的代码置换顺序也行）----------记得笔记
       }
     },
